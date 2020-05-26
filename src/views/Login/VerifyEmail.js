@@ -42,12 +42,14 @@ function VerifyEmail() {
       
       if( signInMethods.length ) {
         dispatch(AlertActions.error('Já existe uma conta ativa com este e-mail!'));
+        setLoading(false);
         return;
       }
 
       const verifiedEmail = await listByEmail(email);
       if( !verifiedEmail ) {
         dispatch(AlertActions.error('Este email não é válido ou não está registrado no sistema!'));
+        setLoading(false);
         return;
       }
 
