@@ -18,24 +18,27 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Switch } from "react-router-dom";
+import { Provider } from 'react-redux'
+import store from './store';
 
-import AdminLayout from "layouts/Admin/Admin.js";
-import RTLLayout from "layouts/RTL/RTL.js";
+import Main from './routes/Main';
+import Login from './routes/Login';
+import Loading from './routes/Loading';
 
-import "assets/scss/black-dashboard-react.scss";
+import "assets/css/black-dashboard-react.css";
 import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
 
 const hist = createBrowserHistory();
 
 ReactDOM.render(
-  <Router history={hist}>
-    <Switch>
-      <Route path="/admin" render={props => <AdminLayout {...props} />} />
-      <Route path="/rtl" render={props => <RTLLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
-    </Switch>
-  </Router>,
+  <Provider store={store}>
+    <Router history={hist}>
+        <Loading />
+        <Login />
+        <Main />
+    </Router>
+  </Provider>,
   document.getElementById("root")
 );

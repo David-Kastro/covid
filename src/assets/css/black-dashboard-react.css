@@ -4186,7 +4186,7 @@ button.close {
   flex-direction: column;
   width: 100%;
   pointer-events: auto;
-  background-color: #ffffff;
+  background-color: #27293d;
   background-clip: padding-box;
   border: 1px solid rgba(34, 42, 66, 0.2);
   border-radius: 0.2857rem;
@@ -4204,7 +4204,7 @@ button.close {
   .modal-backdrop.fade {
     opacity: 0; }
   .modal-backdrop.show {
-    opacity: 0.16; }
+    opacity: 1; }
 
 .modal-header {
   display: flex;
@@ -4216,10 +4216,18 @@ button.close {
   border-top-right-radius: 0.2857rem; }
   .modal-header .close {
     padding: 24px 24px 0 24px;
+    color: '#e14eca';
+    opacity: 1;
     margin: -24px 24px 0 24px -24px 24px 0 24px -24px 24px 0 24px auto; }
+    .modal-header .close span {
+      font-size: 42px;
+      font-family: "Poppins", sans-serif;
+      font-weight: 300;
+    }
 
 .modal-title {
   margin-bottom: 0;
+  font-size: 46px;
   line-height: 1.1; }
 
 .modal-body {
@@ -8802,7 +8810,7 @@ img {
       margin-top: 5px;
       margin-bottom: 0; }
     .modal-content .modal-header .modal-title {
-      color: #222a42; }
+      color: #fff; }
     .modal-content .modal-header i.tim-icons {
       font-size: 16px; }
   .modal-content .modal-body {
@@ -9479,9 +9487,12 @@ img {
   color: #ffffff; }
 
 .modal .modal-header .close {
-  color: #fd5d93;
-  text-shadow: none; }
+  color: #e14eca;
+  text-shadow: none;
+  opacity: 1;
+  transition: color .2s; }
   .modal .modal-header .close:hover, .modal .modal-header .close:focus {
+    color: #ba54f5;
     opacity: 1; }
 
 .modal.modal-black .modal-content {
@@ -12530,3 +12541,85 @@ select.form-control option {
   color: #888; }
 
 /*# sourceMappingURL=black-dashboard-react.css.map */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-corner {
+  display: none;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: rgba(82, 95, 127, 0.2);
+  border-radius: 8px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(82, 95, 127, 0.4);
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(82, 95, 127, 0.6);
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+}
+
+.button-content i {
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.alert-style {
+  position: fixed;
+  top: 75px;
+  z-index: 99;
+  right: 30px;
+  width: 400px;
+}
+
+.hover-row {
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  transition: all .2s;
+}
+
+.hover-row:hover {
+  background-color: rgba(255, 255, 255, .3)!important;
+}
+
+.c-icon-button {
+  font-size: 20px!important;
+  cursor: pointer;
+  padding: 5px;
+  transition: color .2s;
+}
+
+.c-icon-button:hover {
+  color: #e14eca;
+}
+
+.login-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  background: #ff00cc;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to left, #333399, #ff00cc);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left, #333399, #ff00cc); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */  
+}
+
+.c-modal-title {
+  font-size: 24px!important;
+}

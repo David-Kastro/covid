@@ -1,34 +1,21 @@
-/*!
-
-=========================================================
-* Black Dashboard React v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-// javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+// import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+import CustomAlert from 'components/Alert';
 
-import routes from "routes.js";
+import { routes, adminRoutes, medicRoutes} from "../../routes/routes.js";
 
 import logo from "assets/img/react-logo.png";
+
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { Creators as AuthActions } from '../../store/ducks/auth';
 
 var ps;
 
@@ -77,6 +64,25 @@ class Admin extends React.Component {
     document.documentElement.classList.toggle("nav-open");
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
   };
+
+  // Provisório! o ideal seria criar um layout pra cada perfil!
+  getAllowedRoutes = () => {
+    const { role } = this.props.auth;
+    if( role === 'DEV' ) {
+      return routes;
+    }
+
+    if( role === 'ADMIN' ) {
+      return adminRoutes;
+    }
+
+    if( role === 'MEDIC' ) {
+      return medicRoutes;
+    }
+
+    return [];
+  }
+
   getRoutes = routes => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
@@ -96,13 +102,14 @@ class Admin extends React.Component {
     this.setState({ backgroundColor: color });
   };
   getBrandText = path => {
-    for (let i = 0; i < routes.length; i++) {
+    const allowedRoutes = this.getAllowedRoutes();
+    for (let i = 0; i < allowedRoutes.length; i++) {
       if (
         this.props.location.pathname.indexOf(
-          routes[i].layout + routes[i].path
+          allowedRoutes[i].layout + allowedRoutes[i].path
         ) !== -1
       ) {
-        return routes[i].name;
+        return allowedRoutes[i].name;
       }
     }
     return "Brand";
@@ -113,11 +120,11 @@ class Admin extends React.Component {
         <div className="wrapper">
           <Sidebar
             {...this.props}
-            routes={routes}
+            routes={this.getAllowedRoutes()}
             bgColor={this.state.backgroundColor}
             logo={{
-              outterLink: "https://www.creative-tim.com/",
-              text: "Creative Tim",
+              outterLink: "/",
+              text: "Covid App",
               imgSrc: logo
             }}
             toggleSidebar={this.toggleSidebar}
@@ -133,6 +140,7 @@ class Admin extends React.Component {
               toggleSidebar={this.toggleSidebar}
               sidebarOpened={this.state.sidebarOpened}
             />
+            <CustomAlert />
             <Switch>
               {this.getRoutes(routes)}
               <Redirect from="*" to="/admin/dashboard"/>
@@ -143,13 +151,22 @@ class Admin extends React.Component {
             )}
           </div>
         </div>
-        <FixedPlugin
+        {/* <FixedPlugin
           bgColor={this.state.backgroundColor}
           handleBgClick={this.handleBgClick}
-        />
+        /> */}
       </>
     );
   }
 }
 
-export default Admin;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators(AuthActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Admin);

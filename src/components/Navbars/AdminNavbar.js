@@ -1,23 +1,6 @@
-/*!
-
-=========================================================
-* Black Dashboard React v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
-// nodejs library that concatenates classes
 import classNames from "classnames";
+import firebase from '../../services/firebase';
 
 // reactstrap components
 import {
@@ -28,7 +11,7 @@ import {
   DropdownItem,
   UncontrolledDropdown,
   Input,
-  InputGroup,
+  // InputGroup,
   NavbarBrand,
   Navbar,
   NavLink,
@@ -36,6 +19,9 @@ import {
   Container,
   Modal
 } from "reactstrap";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { Creators as AuthActions } from '../../store/ducks/auth';
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -51,6 +37,9 @@ class AdminNavbar extends React.Component {
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateColor);
+  }
+  logOut() {
+    firebase.auth().signOut();
   }
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
@@ -128,8 +117,8 @@ class AdminNavbar extends React.Component {
               <span className="navbar-toggler-bar navbar-kebab" />
             </button>
             <Collapse navbar isOpen={this.state.collapseOpen}>
-              <Nav className="ml-auto" navbar>
-                <InputGroup className="search-bar">
+              <Nav className="ml-auto" navbar style={{display: 'flex', alignItems: 'center', color: 'white'}}>
+                {/* <InputGroup className="search-bar">
                   <Button
                     color="link"
                     data-target="#searchModal"
@@ -179,7 +168,8 @@ class AdminNavbar extends React.Component {
                       </DropdownItem>
                     </NavLink>
                   </DropdownMenu>
-                </UncontrolledDropdown>
+                </UncontrolledDropdown> */}
+                <div>{this.props.auth.data.email}</div>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
@@ -189,21 +179,14 @@ class AdminNavbar extends React.Component {
                     onClick={e => e.preventDefault()}
                   >
                     <div className="photo">
-                      <img alt="..." src={require("assets/img/anime3.png")} />
+                      <img alt="..." src={require("assets/img/default-avatar.png")} />
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none">Log out</p>
+                    <p className="d-lg-none">Sair</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">Profile</DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
-                    </NavLink>
-                    <DropdownItem divider tag="li" />
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                    <NavLink tag="li" onClick={() => this.logOut()}>
+                      <DropdownItem className="nav-item" style={{color: '#f5365c', cursor: 'pointer'}}>Sair</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -235,4 +218,13 @@ class AdminNavbar extends React.Component {
   }
 }
 
-export default AdminNavbar;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators(AuthActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdminNavbar);
