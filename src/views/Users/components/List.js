@@ -15,6 +15,8 @@ import {
 
 import IconButton from 'components/IconButton';
 
+import { useSelector } from 'react-redux';
+
 const rolesColors = {
   ADMIN: 'primary',
   MEDICO: 'info',
@@ -23,12 +25,13 @@ const rolesColors = {
 
 function UsersList(props) {
   const { create, edit, items } = props;
-
+  const { role, assigned } = useSelector(state => state.auth);
   return (
     <>
       <Button 
         className="btn-fill mb-3"
         color="primary" 
+        disabled={role === 'ADMIN' && !assigned}
         onClick={() => create()}
       >
         <div className="button-content">
@@ -68,8 +71,10 @@ function UsersList(props) {
                           )}</td>
                           <td>
                             <IconButton
+                              id="user-edit"
                               icon="pencil" 
                               title="Editar"
+                              disabled={role !== 'DEV' && item.role === 'ADMIN'}
                               action={() => edit(item)}
                             />
                           </td>

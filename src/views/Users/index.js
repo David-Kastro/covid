@@ -15,11 +15,12 @@ function Users() {
 
   const users = useSelector(state => state.user);
   const loading = useSelector(state => state.loading);
+  const { data } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const loadData = useCallback(async () => {
     try {
-      const result = await listUsers()
+      const result = await listUsers(data);
       dispatch(UserActions.setUsers(result));
     } catch (err) {
       dispatch(AlertActions.error('Não foi possível listar os usuários! :('));

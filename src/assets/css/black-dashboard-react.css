@@ -12608,6 +12608,13 @@ select.form-control option {
   color: #e14eca;
 }
 
+.c-icon-button-disabled {
+  opacity: .4;
+  font-size: 20px!important;
+  padding: 5px;
+  transition: color .2s;
+}
+
 .login-screen {
   display: flex;
   flex-direction: column;

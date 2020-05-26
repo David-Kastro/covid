@@ -2,12 +2,17 @@ import firebase from './firebase';
 
 const db = firebase.firestore();
 
-export async function create(data) {
+export async function create(data, user) {
   const result = await db.collection('users').where('email', '==', data.email).get();
   if (!result.empty) {
     throw Error('Já existe um usuário cadastrado com esse email!');
   }
-  return await db.collection('users').add(data);
+  let userData = {
+    ...user,
+    assignedTo: user.assignedTo || null,
+    assigned: user.assigned
+  };
+  return await db.collection('users').add(userData);
 }
 
 export async function save(data) {
@@ -18,18 +23,37 @@ export async function save(data) {
   return await db.collection('users').doc(data.id).set(data);
 }
 
-export async function list() {
-  const result = await db
-    .collection('users')
-    .where('role', 'in', ['ADMIN', 'MEDICO'])
-    .get()
-    .then(querySnapshot => {
-      let data = [];
-      querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
-      return data;
-    });
+export async function list(user) {
+  if(user.role === 'DEV') {
+    const result = await db
+      .collection('users')
+      .where('role', 'in', ['ADMIN', 'MEDICO'])
+      .get()
+      .then(querySnapshot => {
+        let data = [];
+        querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
+        return data;
+      });
 
-  return result;
+    return result;
+
+  } else {
+    if(!user.assigned) {
+      return [];
+    }
+    const result = await db
+      .collection('users')
+      .where('role', 'in', ['ADMIN', 'MEDICO'])
+      .where('assignedTo', '==', user.assignedTo)
+      .get()
+      .then(querySnapshot => {
+        let data = [];
+        querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
+        return data;
+      });
+
+    return result.filter(u => u.id !== user.id);
+  }
 }
 
 export async function listByRole(role) {
@@ -69,7 +93,7 @@ export async function listById(id) {
   return result.data();
 }
 
-export async function assignUser(id, assign = true) {
+export async function assignUser(id, assign = true, lab = null) {
   if(!id) {
     return;
   }
@@ -83,5 +107,6 @@ export async function assignUser(id, assign = true) {
     .doc(id)
     .set({
       assigned: assign,
+      assignedTo: assign ? lab : null
     }, {merge: true});
 }

@@ -8,8 +8,9 @@ export async function create(data) {
   if (!result.empty) {
     throw Error('Já existe um laboratório cadastrado com esse cnpj!');
   }
-  await assignUser(data.adm);
-  return await db.collection('labs').add(data);
+  const newLab = await db.collection('labs').add(data);
+  await assignUser(data.adm, true, newLab.id);
+  return newLab;
 }
 
 export async function save(data) {
@@ -20,7 +21,7 @@ export async function save(data) {
   const lab = result.data();
   if (lab.adm !== data.adm) {
     await assignUser(lab.adm, false);
-    await assignUser(data.adm);
+    await assignUser(data.adm, true, result.id);
   }
   return await db.collection('labs').doc(data.id).set(data);
 }

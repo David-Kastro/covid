@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { create, save } from '../../../services/user';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../../../store/ducks/alert';
 import { Creators as LoadingActions } from '../../../store/ducks/loading';
+import { enRoles } from '../../../helpers/enums';
 
 import {
   Button,
@@ -13,6 +14,7 @@ import {
   FormGroup,
   Form,
   Input,
+  Label,
   Row,
   Col
 } from 'reactstrap';
@@ -21,6 +23,7 @@ const requiredFields = [
   'name',
   'last_name',
   'email',
+  'role',
 ];
 
 const enumTitles = {
@@ -34,18 +37,17 @@ const UserDialog = ({ open, toggle, loading, loadData, item }) => {
     name: '',
     last_name: '',
     email: '',
-    role: 'ADMIN',
+    role: 'MEDICO',
     assigned: false,
   });
-
+  const { role, data } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-
   const closeForm = () => {
     setModel({
       name: '',
       last_name: '',
       email: '',
-      role: 'ADMIN',
+      role: 'MEDICO',
       assigned: false,
     });
     toggle();
@@ -84,7 +86,7 @@ const UserDialog = ({ open, toggle, loading, loadData, item }) => {
     try {
       dispatch(LoadingActions.setLoading(true));
       if( getAction === 'CREATE' ) {
-        await create(model);
+        await create(model, data);
         dispatch(AlertActions.success('Usuário cadastrado com sucesso!'));
       } else {
         await save(model);
@@ -140,10 +142,29 @@ const UserDialog = ({ open, toggle, loading, loadData, item }) => {
                     style={{ color: '#fff' }}
                     onChange={event => handleForm('email', event.target.value)}
                     value={model.email}
+                    disabled={getAction === 'EDIT'}
                     placeholder="E-mail*"
                     type="email"
                     disabled={loading}
                   />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col className="mt-2" md="12">
+                <FormGroup>
+                  <Label for="role-select">Perfil*</Label>
+                  <Input
+                    type="select"
+                    name="select"
+                    id="role-select"
+                    value={model.role}
+                    onChange={event => handleForm('role', event.target.value)}
+                    disabled={role !== 'DEV'}
+                  >
+                    <option value="ADMIN">{enRoles.ADMIN}</option>
+                    <option value="MEDICO">{enRoles.MEDIC0}</option>
+                  </Input>
                 </FormGroup>
               </Col>
             </Row>

@@ -29,8 +29,8 @@ const requiredFields = [
   'neighborhood',
   'city',
   'federal_unit',
-  'public_key',
-  'access_token',
+  // 'public_key',
+  // 'access_token',
 ];
 
 const enumTitles = {
@@ -293,7 +293,7 @@ function LabsForm(props) {
                 <Row>
                   <Col className="pr-md-1" md="6">
                     <FormGroup>
-                      <label>Chave Pública* (Mercado Pago)</label>
+                      <label>Chave Pública (Mercado Pago)</label>
                       <Input
                         onChange={event => handleForm('public_key', event.target.value)}
                         value={model.public_key}
@@ -305,7 +305,7 @@ function LabsForm(props) {
                   </Col>
                   <Col className="pl-md-1" md="6">
                     <FormGroup>
-                      <label>Token de Acesso* (Mercado Pago)</label>
+                      <label>Token de Acesso (Mercado Pago)</label>
                       <Input
                         onChange={event => handleForm('access_token', event.target.value)}
                         value={model.access_token}
@@ -320,6 +320,9 @@ function LabsForm(props) {
               <Row>
                 <Col xs="6">
                   <h4>Os campos marcado com <span style={{color: '#e14eca'}}>*</span> são obrigatórios!</h4>
+                  <span>As credenciais do mercado pago são necessárias para serem realizadas as transações e agendamentos! Obtenha-as aqui:<br/>
+                    (usar credenciais de produção).
+                  </span>
                 </Col>
               </Row>
             </CardBody>

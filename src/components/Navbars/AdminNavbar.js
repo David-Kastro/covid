@@ -169,7 +169,7 @@ class AdminNavbar extends React.Component {
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown> */}
-                <div>{this.props.auth.data.email}</div>
+                <div>{this.props.auth.data.email} | {this.props.auth.role}</div>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
