@@ -18,7 +18,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
-import { Router, Switch } from "react-router-dom";
+import { Router, Switch, Redirect } from "react-router-dom";
 import { Provider } from 'react-redux'
 import store from './store';
 
@@ -38,6 +38,7 @@ ReactDOM.render(
         <Loading />
         <Login />
         <Main />
+        <Redirect from="*" to="/"/>
     </Router>
   </Provider>,
   document.getElementById("root")
