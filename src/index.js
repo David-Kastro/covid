@@ -38,7 +38,6 @@ ReactDOM.render(
         <Loading />
         <Login />
         <Main />
-        <Redirect from="*" to="/"/>
     </Router>
   </Provider>,
   document.getElementById("root")
