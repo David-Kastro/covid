@@ -142,10 +142,9 @@ const UserDialog = ({ open, toggle, loading, loadData, item }) => {
                     style={{ color: '#fff' }}
                     onChange={event => handleForm('email', event.target.value)}
                     value={model.email}
-                    disabled={getAction === 'EDIT'}
                     placeholder="E-mail*"
                     type="email"
-                    disabled={loading}
+                    disabled={loading || getAction === 'EDIT'}
                   />
                 </FormGroup>
               </Col>

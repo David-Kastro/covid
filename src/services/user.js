@@ -7,10 +7,10 @@ export async function create(data, user) {
   if (!result.empty) {
     throw Error('Já existe um usuário cadastrado com esse email!');
   }
-  let userData = {
-    ...user,
+  const userData = {
+    ...data,
     assignedTo: user.assignedTo || null,
-    assigned: user.assigned
+    assigned: !!user.assigned
   };
   return await db.collection('users').add(userData);
 }
