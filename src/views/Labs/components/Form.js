@@ -58,6 +58,7 @@ function LabsForm(props) {
     public_key: '', // Chave publica mercado pago
     access_token: '', // Chave privada mercado pago
     adm: '',
+    type: 'LAB'
   });
   const dispatch = useDispatch();
 

@@ -29,6 +29,7 @@ export async function save(data) {
 export async function list() {
   const result = await db
     .collection('labs')
+    .where('type', '==', 'LAB')
     .get()
     .then(querySnapshot => {
       let data = [];
