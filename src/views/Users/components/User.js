@@ -16,7 +16,7 @@ import {
   Input,
   Label,
   Row,
-  Col
+  Col,
 } from 'reactstrap';
 
 const requiredFields = [

@@ -19,7 +19,7 @@
 // // // Chart variables
 // #############################
 
-// chartExample1 and chartExample2 options
+// chart1 a (labels, data) =>nd chart2 o (labels, data) =>ptions
 let chart1_2_options = {
   maintainAspectRatio: false,
   legend: {
@@ -73,7 +73,7 @@ let chart1_2_options = {
 // #########################################
 // // // used inside src/views/Dashboard.js
 // #########################################
-let chartExample1 = {
+let chart1 = (labels, data) => ({
   data1: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -84,20 +84,7 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
           label: "My First dataset",
@@ -114,7 +101,7 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          data
           // data: [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100]
         }
       ]
@@ -130,20 +117,7 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
           label: "My First dataset",
@@ -160,7 +134,7 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          data
           // data: [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120]
         }
       ]
@@ -176,23 +150,10 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Exames",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -206,19 +167,19 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          data
           // data: [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130]
         }
       ]
     };
   },
   options: chart1_2_options
-};
+});
 
 // #########################################
 // // // used inside src/views/Dashboard.js
 // #########################################
-let chartExample2 = {
+let chart2 = (labels, data) => ({
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -229,16 +190,10 @@ let chartExample2 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
-          label: "Data",
+          label: "Clientes",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -252,18 +207,18 @@ let chartExample2 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [0, 0, 0, 0, 2]
+          data
         }
       ]
     };
   },
   options: chart1_2_options
-};
+});
 
 // #########################################
 // // // used inside src/views/Dashboard.js
 // #########################################
-let chartExample3 = {
+let chart3 = (labels, data) => ({
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -274,16 +229,10 @@ let chartExample3 = {
     gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
-          label: "Countries",
+          label: "Lucro",
           fill: true,
           backgroundColor: gradientStroke,
           hoverBackgroundColor: gradientStroke,
@@ -291,7 +240,7 @@ let chartExample3 = {
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          data: [0, 0, 0, 0, 0]
+          data
         }
       ]
     };
@@ -321,8 +270,8 @@ let chartExample3 = {
             zeroLineColor: "transparent"
           },
           ticks: {
-            suggestedMin: 60,
-            suggestedMax: 120,
+            suggestedMin: 500,
+            suggestedMax: 5000,
             padding: 20,
             fontColor: "#9e9e9e"
           }
@@ -343,12 +292,12 @@ let chartExample3 = {
       ]
     }
   }
-};
+});
 
 // #########################################
 // // // used inside src/views/Dashboard.js
 // #########################################
-const chartExample4 = {
+const chart4 = (labels, data) => ({
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -359,16 +308,10 @@ const chartExample4 = {
     gradientStroke.addColorStop(0, "rgba(66,134,121,0)"); //green colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY"
-      ],
+      labels,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Exames concluídos",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#00d6b4",
@@ -382,7 +325,7 @@ const chartExample4 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [0, 0, 0, 0, 0]
+          data
         }
       ]
     };
@@ -438,11 +381,11 @@ const chartExample4 = {
       ]
     }
   }
-};
+});
 
 module.exports = {
-  chartExample1, // in src/views/Dashboard.js
-  chartExample2, // in src/views/Dashboard.js
-  chartExample3, // in src/views/Dashboard.js
-  chartExample4 // in src/views/Dashboard.js
+  chart1,// in src/views/Dashboard.js
+  chart2,// in src/views/Dashboard.js
+  chart3,// in src/views/Dashboard.js
+  chart4 // in src/views/Dashboard.js
 };

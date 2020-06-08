@@ -123,7 +123,7 @@ class Admin extends React.Component {
             routes={this.getAllowedRoutes()}
             bgColor={this.state.backgroundColor}
             logo={{
-              outterLink: "/",
+              innerLink: "/admin/dashboard",
               text: "Covid App",
               imgSrc: logo
             }}

@@ -33,3 +33,19 @@ export const enUFs = {
   SE: 'Sergipe',
   TO: 'Tocantins'
 };
+
+export const enStatus = {
+  'approved': 'Pagamento Aprovado',
+  'booked':  'Agendado',
+  'pending': 'Pagamento Pendente',
+  'finished': 'Finalizado',
+  'cancelled': 'Cancelado',
+}
+
+export const enStatusColor = {
+  'approved': '#00E676',
+  'booked':  '#0091EA',
+  'pending': '#FFD600',
+  'finished': '#6200EA',
+  'cancelled': '#DD2C00',
+}

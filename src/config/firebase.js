@@ -1,10 +1,10 @@
-export default {
-  apiKey: "AIzaSyC6JXLzAiZ069dAR7bW5TAsqmiOMrbeLUA",
-  authDomain: "payment-e556d.firebaseapp.com",
-  databaseURL: "https://payment-e556d.firebaseio.com",
-  projectId: "payment-e556d",
-  storageBucket: "payment-e556d.appspot.com",
-  messagingSenderId: "563536211044",
-  appId: "1:563536211044:web:68e6f722379c7e08ad4371",
-  measurementId: "G-9XMKQW1507"
+export default  {
+  apiKey: "AIzaSyBNNPnRQ2PXf5IwO4Bw0ehhje8I_bRgvRs",
+  authDomain: "covid-pay.firebaseapp.com",
+  databaseURL: "https://covid-pay.firebaseio.com",
+  projectId: "covid-pay",
+  storageBucket: "covid-pay.appspot.com",
+  messagingSenderId: "727576197395",
+  appId: "1:727576197395:web:6e7ab6a418ddacbb8f42e6",
+  measurementId: "G-P2H3YS5F0C"
 };

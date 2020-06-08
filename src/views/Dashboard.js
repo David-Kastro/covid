@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
+import { getExamsGraph, getProfitGraph, getClientsGraph } from '../services/dashboard';
+import { useDispatch, useSelector } from 'react-redux';
+import { Creators as AlertActions } from '../store/ducks/alert';
 
 // reactstrap components
 import {
@@ -14,25 +17,47 @@ import {
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
-  Label,
-  FormGroup,
-  Input,
-  Table,
   Row,
   Col,
-  UncontrolledTooltip
 } from "reactstrap";
 
 // core components
 import {
-  chartExample1,
-  chartExample2,
-  chartExample3,
-  chartExample4
+  chart1,
+  chart2,
+  chart3,
+  chart4
 } from "variables/charts.js";
 
 function Dashboard() {
   const [bigChartData, setBigChartData] = useState("data1");
+  const [dataChart1, setDataChart1] = useState(null);
+  const [dataChart2, setDataChart2] = useState(null);
+  const [dataChart3, setDataChart3] = useState(null);
+  const [dataChart4, setDataChart4] = useState(null);
+
+  const { data } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+
+  const loadData = useCallback(async () => {
+    try {
+      const chartsData = await Promise.all([
+        getExamsGraph(data),
+        getClientsGraph(data),
+        getProfitGraph(data)
+      ]);
+      setDataChart1(chartsData[0]);
+      setDataChart2(chartsData[1]);
+      setDataChart3(chartsData[2]);
+      setDataChart4(chartsData[0].dataFinished);
+    } catch (err) {
+      dispatch(AlertActions.error('Não foi possível buscar os dados!'));
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   return (
     <>
@@ -124,10 +149,10 @@ function Dashboard() {
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Line
-                    data={chartExample1[bigChartData]}
-                    options={chartExample1.options}
-                  />
+                  {dataChart1 && <Line
+                    data={chart1(dataChart1.labels, dataChart1[bigChartData]).data1}
+                    options={chart1(dataChart1.labels, dataChart1[bigChartData]).options}
+                  />}
                 </div>
               </CardBody>
             </Card>
@@ -140,15 +165,15 @@ function Dashboard() {
                 <h5 className="card-category">Total de clientes</h5>
                 <CardTitle tag="h3">
                   <i className="tim-icons icon-single-02 text-info" />{" "}
-                  2
+                  {dataChart2 ? dataChart2.total : '0'}
                 </CardTitle>
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Line
-                    data={chartExample2.data}
-                    options={chartExample2.options}
-                  />
+                  {dataChart2 && <Line
+                    data={chart2(dataChart2.labels, dataChart2.data).data}
+                    options={chart2(dataChart2.labels, dataChart2.data).options}
+                  />}
                 </div>
               </CardBody>
             </Card>
@@ -159,15 +184,15 @@ function Dashboard() {
                 <h5 className="card-category">Total de lucro</h5>
                 <CardTitle tag="h3">
                   <i className="tim-icons icon-coins text-primary" />{" "}
-                  R$ 0,00
+                  {dataChart3 ? dataChart3.total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) : 'R$ 0,00'}
                 </CardTitle>
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Bar
-                    data={chartExample3.data}
-                    options={chartExample3.options}
-                  />
+                  {dataChart3 && <Bar
+                    data={chart3(dataChart3.labels, dataChart3.data).data}
+                    options={chart3(dataChart3.labels, dataChart3.data).options}
+                  />}
                 </div>
               </CardBody>
             </Card>
@@ -177,15 +202,16 @@ function Dashboard() {
               <CardHeader>
                 <h5 className="card-category">Exames concluídos</h5>
                 <CardTitle tag="h3">
-                  <i className="tim-icons icon-send text-success" /> 0
+                  <i className="tim-icons icon-send text-success" />
+                  {dataChart4 ? dataChart4.total : '0'}
                 </CardTitle>
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Line
-                    data={chartExample4.data}
-                    options={chartExample4.options}
-                  />
+                  {dataChart4 && <Line
+                    data={chart4(dataChart4.labels, dataChart4.data).data}
+                    options={chart4(dataChart4.labels, dataChart4.data).options}
+                  />}
                 </div>
               </CardBody>
             </Card>
