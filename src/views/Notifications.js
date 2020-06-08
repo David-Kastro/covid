@@ -16,10 +16,9 @@ import {
   Col,
   Button,
   ButtonGroup,
-  Badge
+  Badge,
+  UncontrolledTooltip
 } from "reactstrap";
-
-import IconButton from 'components/IconButton';
 
 const examFilterOptions = {
   'COLETA': 'Exames de Coleta',
@@ -172,13 +171,22 @@ function Notifications() {
                           )}</td>
                           <td>---</td>
                           <td>
-                            <Button
-                              color="primary"
-                              disabled={item.status !== 'approved' || !item.booked_at}
-                              action={() => {}}
+                            <div id={'button_' + item.id}>
+                              <Button
+                                color="primary"
+                                disabled={item.status !== 'approved' || !item.booked_at}
+                                onClick={() => {}}
+                              >
+                                <span style={{color: '#fff', fontSize:10, padding: 0}}>{role === 'MEDICO' ? 'Pegar exame' : 'Atribuir a um médico'}</span>
+                              </Button>
+                            </div>
+                            <UncontrolledTooltip
+                              delay={0}
+                              target={'button_' + item.id}
+                              placement="right"
                             >
-                              <span style={{color: '#fff', fontSize:10, padding: 0}}>{role === 'MEDICO' ? 'Pegar exame' : 'Atribuir a um médico'}</span>
-                            </Button>
+                              {item.status === 'approved' && !item.booked_at ? 'Aguardando Agendamento' : enStatus[item.status]}
+                            </UncontrolledTooltip>
                           </td>
                         </tr>
                       ))
