@@ -3,9 +3,10 @@ import classNames from "classnames";
 import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../../store/ducks/alert';
 import { Creators as LoadingActions } from '../../store/ducks/loading';
-import { getExams, assignExam } from '../../services/exam';
+import { getExams, assignExam, finishExam as setExamFinished } from '../../services/exam';
 import { enStatus, enStatusColor } from '../../helpers/enums';
 import { formatDate } from 'helpers/date';
+import firebase from '../../services/firebase';
 
 // reactstrap components
 import {
@@ -23,6 +24,7 @@ import {
 } from "reactstrap";
 
 import Medics from './components/Medics';
+import FinishExam from './components/FinishExam';
 
 const examFilterOptions = {
   'COLETA': 'Exames de Coleta',
@@ -34,6 +36,8 @@ function Exams() {
   const [ examFilter, setExamFilter ] = useState('TODOS');
   const [ exams, setExams ] = useState(null);
   const [ showMedicsDialog, setShowMedicsDialog ] = useState(false);
+  const [ showFinishExamDialog, setShowFinishExamDialog ] = useState(false);
+  const [ uploadLoading, setUploadLoading ] = useState(false);
   const [ selectedExam, setSelectedExam ] = useState(null);
   const { role, data } = useSelector(state => state.auth);
 
@@ -60,8 +64,34 @@ function Exams() {
       dispatch(LoadingActions.setLoading(true));
       await assignExam(selectedExam, medic);
       closeMedicsDialog();
+      loadData();
+      dispatch(AlertActions.success('Exame Atribuído!'));
+      dispatch(LoadingActions.setLoading(false));
     } catch(err) {
       dispatch(AlertActions.error('Não foi possível atribuir o Exame'));
+      dispatch(LoadingActions.setLoading(false));
+    }
+  }
+
+  const finishExam = async file => {
+    const storageRef = firebase.storage().ref();
+    const fileName = `results/${Date.now()}-${file.file.name}`;
+    try {
+      setUploadLoading(true)
+      const fileRef = storageRef.child(fileName);
+      const uploadResult = await fileRef.put(file.Uint8);
+      if( uploadResult.state !== 'success' ) {
+        dispatch(AlertActions.error('Não foi possível realizar o upload do arquivo!'));
+        return;
+      }
+      await setExamFinished(selectedExam, uploadResult.metadata.fullPath);
+      closeFinishExamDialog();
+      loadData();
+      dispatch(AlertActions.success('Exame Finalizado!'));
+      setUploadLoading(false)
+    } catch(err) {
+      dispatch(AlertActions.error('Não foi possível finalizar o exame'));
+      setUploadLoading(false)
     }
   }
 
@@ -72,6 +102,16 @@ function Exams() {
 
   const closeMedicsDialog = () => {
     setShowMedicsDialog(false);
+    setSelectedExam(null);
+  };
+
+  const openFinishExamDialog =  exam => {
+    setSelectedExam(exam);
+    setShowFinishExamDialog(true);
+  };
+
+  const closeFinishExamDialog = () => {
+    setShowFinishExamDialog(false);
     setSelectedExam(null);
   };
 
@@ -203,13 +243,17 @@ function Exams() {
                           <td>
                             <div id={'button_' + item.id}>
                               <Button
-                                color={item.assigned ? 'secondary' : 'primary'}
+                                color={item.assigned ? 'info' : 'primary'}
                                 disabled={item.status !== 'booked' || !item.booked_at}
-                                onClick={() => openMedicsDialog(item.id)}
+                                onClick={() => {
+                                  return role === 'MEDICO'
+                                    ? openFinishExamDialog(item.id)
+                                    : openMedicsDialog(item.id);
+                                }}
                                 style={{width: 180}}
                               >
                                 {role === 'MEDICO' ? (
-                                  <span style={{color: '#fff', fontSize:10, padding: 0}}>Pegar exame</span>
+                                  <span style={{color: '#fff', fontSize:10, padding: 0}}>Finalizar Exame</span>
                                 ) : (
                                   <span style={{color: '#fff', fontSize:10, padding: 0}}>{item.assigned ? 'Mudar médico' : 'Atribuir a um médico'}</span>
                                 )}
@@ -238,7 +282,10 @@ function Exams() {
         </Col>
       </Row>
       {selectedExam && (
-        <Medics open={showMedicsDialog} toggle={closeMedicsDialog} onSubmit={assignExamToMedic} lab={getSelectedExamLabId(selectedExam)} />
+        <>
+          <Medics open={showMedicsDialog} toggle={closeMedicsDialog} onSubmit={assignExamToMedic} lab={getSelectedExamLabId(selectedExam)} />
+          <FinishExam open={showFinishExamDialog} toggle={closeFinishExamDialog} onSubmit={finishExam} uploadLoading={uploadLoading} />
+        </>
       )}
     </div>
   );

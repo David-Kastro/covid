@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
 import { Redirect } from "react-router-dom";
 import { getExamsGraph, getProfitGraph, getClientsGraph } from '../services/dashboard';
+import { getByStatus } from '../services/exam';
 import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../store/ducks/alert';
+import { enStatus, enStatusColor } from 'helpers/enums';
+import { formatDate } from 'helpers/date';
 
 // reactstrap components
 import {
@@ -20,6 +23,8 @@ import {
   UncontrolledDropdown,
   Row,
   Col,
+  Table,
+  Badge
 } from "reactstrap";
 
 // core components
@@ -36,21 +41,41 @@ function Dashboard() {
   const [dataChart2, setDataChart2] = useState(null);
   const [dataChart3, setDataChart3] = useState(null);
   const [dataChart4, setDataChart4] = useState(null);
+  const [bookedExams, setBookedExams] = useState(null);
+  const [finishedExams, setFinishedExams] = useState(null);
 
   const { data, role } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+
+  const getBookedExams = useMemo(() => {
+    if( !bookedExams ) {
+      return []
+    }
+    return bookedExams;
+  }, [bookedExams]);
+
+  const getFinishedExams = useMemo(() => {
+    if( !finishedExams ) {
+      return []
+    }
+    return finishedExams;
+  }, [finishedExams]);
 
   const loadData = useCallback(async () => {
     try {
       const chartsData = await Promise.all([
         getExamsGraph(data),
         getClientsGraph(data),
-        getProfitGraph(data)
+        getProfitGraph(data),
+        getByStatus(data, 'booked'),
+        getByStatus(data, 'finished'),
       ]);
       setDataChart1(chartsData[0]);
       setDataChart2(chartsData[1]);
       setDataChart3(chartsData[2]);
       setDataChart4(chartsData[0].dataFinished);
+      setBookedExams(chartsData[3]);
+      setFinishedExams(chartsData[4]);
     } catch (err) {
       dispatch(AlertActions.error('Não foi possível buscar os dados!'));
     }
@@ -226,8 +251,8 @@ function Dashboard() {
           <Col lg="6" md="12">
             <Card className="card-tasks">
               <CardHeader>
-                <h6 className="title d-inline">Exames Pendentes(0)</h6>
-                <p className="card-category d-inline"> hoje</p>
+                <h6 className="title d-inline">Exames Agendados({getBookedExams.length})</h6>
+                {/* <p className="card-category d-inline"> hoje</p> */}
                 <UncontrolledDropdown>
                   <DropdownToggle
                     caret
@@ -240,8 +265,7 @@ function Dashboard() {
                   </DropdownToggle>
                   <DropdownMenu aria-labelledby="dropdownMenuLink" right>
                     <DropdownItem
-                      href="#pablo"
-                      onClick={e => e.preventDefault()}
+                      onClick={() => loadData()}
                     >
                       Recarregar
                     </DropdownItem>
@@ -261,235 +285,42 @@ function Dashboard() {
                 </UncontrolledDropdown>
               </CardHeader>
               <CardBody>
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
-                  Nenhum item encontrado
-                </div>
-                {/* <div className="table-full-width table-responsive">
-                  <Table>
+                {getBookedExams && getBookedExams.length ? (
+                  <Table className="tablesorter" responsive>
+                    <thead className="text-primary">
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Atribuído</th>
+                        <th>Agendado para</th>
+                      </tr>
+                    </thead>
                     <tbody>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Update the Documentation</p>
-                          <p className="text-muted">
-                            Dwuamish Head, Seattle, WA 8:47 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip636901683"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip636901683"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input
-                                defaultChecked
-                                defaultValue=""
-                                type="checkbox"
-                              />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">GDPR Compliance</p>
-                          <p className="text-muted">
-                            The GDPR is a regulation that requires businesses
-                            to protect the personal data and privacy of Europe
-                            citizens for transactions that occur within EU
-                            member states.
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip457194718"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip457194718"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Solve the issues</p>
-                          <p className="text-muted">
-                            Fifty percent of all respondents said they would
-                            be more likely to shop at a company
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip362404923"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip362404923"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Release v2.0.0</p>
-                          <p className="text-muted">
-                            Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip818217463"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip818217463"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Export the processed files</p>
-                          <p className="text-muted">
-                            The report also shows that consumers will not
-                            easily forgive a company once a breach exposing
-                            their personal data occurs.
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip831835125"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip831835125"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Arival at export process</p>
-                          <p className="text-muted">
-                            Capitol Hill, Seattle, WA 12:34 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip217595172"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip217595172"
-                            placement="right"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
+                      {
+                        getBookedExams.map(item => (
+                          <tr key={item.id}>
+                            <td>{item.type}</td>
+                            <td>
+                              <Badge style={{fontSize: 14, backgroundColor: enStatusColor[item.status]}}>
+                                {item.status === 'approved' && !item.booked_at ? 'Aguardando Agendamento' : enStatus[item.status]}
+                              </Badge>
+                            </td>
+                            <td>{item.assigned ? (
+                              <Badge color="success" style={{fontSize: 14}}>Sim</Badge>
+                            ) : (
+                              <Badge color="light" style={{fontSize: 14}}>Não</Badge>
+                            )}</td>
+                            <td>{item.booked_at ? formatDate(item.booked_at.seconds) : '---'}</td>
+                          </tr>
+                        ))
+                      }
                     </tbody>
                   </Table>
-                </div> */}
+                ) : (
+                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
+                    Nenhum item encontrado
+                  </div>
+                )}
               </CardBody>
             </Card>
           </Col>
@@ -499,63 +330,42 @@ function Dashboard() {
                 <CardTitle tag="h4">Ultimos exames concluídos</CardTitle>
               </CardHeader>
               <CardBody>
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
-                  Nenhum item encontrado
-                </div>
-                {/* <Table className="tablesorter" responsive>
-                  <thead className="text-primary">
-                    <tr>
-                      <th>Name</th>
-                      <th>Country</th>
-                      <th>City</th>
-                      <th className="text-center">Salary</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Dakota Rice</td>
-                      <td>Niger</td>
-                      <td>Oud-Turnhout</td>
-                      <td className="text-center">$36,738</td>
-                    </tr>
-                    <tr>
-                      <td>Minerva Hooper</td>
-                      <td>Curaçao</td>
-                      <td>Sinaai-Waas</td>
-                      <td className="text-center">$23,789</td>
-                    </tr>
-                    <tr>
-                      <td>Sage Rodriguez</td>
-                      <td>Netherlands</td>
-                      <td>Baileux</td>
-                      <td className="text-center">$56,142</td>
-                    </tr>
-                    <tr>
-                      <td>Philip Chaney</td>
-                      <td>Korea, South</td>
-                      <td>Overland Park</td>
-                      <td className="text-center">$38,735</td>
-                    </tr>
-                    <tr>
-                      <td>Doris Greene</td>
-                      <td>Malawi</td>
-                      <td>Feldkirchen in Kärnten</td>
-                      <td className="text-center">$63,542</td>
-                    </tr>
-                    <tr>
-                      <td>Mason Porter</td>
-                      <td>Chile</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$78,615</td>
-                    </tr>
-                    <tr>
-                      <td>Jon Porter</td>
-                      <td>Portugal</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$98,615</td>
-                    </tr>
-                  </tbody>
-                </Table> */}
+                {getFinishedExams && getFinishedExams.length ? (
+                  <Table className="tablesorter" responsive>
+                    <thead className="text-primary">
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Atribuído</th>
+                        <th>Agendado para</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        getFinishedExams.map(item => (
+                          <tr key={item.id}>
+                            <td>{item.type}</td>
+                            <td>
+                              <Badge style={{fontSize: 14, backgroundColor: enStatusColor[item.status]}}>
+                                {item.status === 'approved' && !item.booked_at ? 'Aguardando Agendamento' : enStatus[item.status]}
+                              </Badge>
+                            </td>
+                            <td>{item.assigned ? (
+                              <Badge color="success" style={{fontSize: 14}}>Sim</Badge>
+                            ) : (
+                              <Badge color="light" style={{fontSize: 14}}>Não</Badge>
+                            )}</td>
+                            <td>{item.booked_at ? formatDate(item.booked_at.seconds) : '---'}</td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </Table>
+                ) : (
+                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
+                    Nenhum item encontrado
+                  </div>
+                )}
               </CardBody>
             </Card>
           </Col>

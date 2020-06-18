@@ -87,7 +87,7 @@ let chart1 = (labels, data) => ({
       labels,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Exames",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -120,7 +120,7 @@ let chart1 = (labels, data) => ({
       labels,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Exames",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
