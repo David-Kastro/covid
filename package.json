@@ -53,6 +53,7 @@
     "typescript": "3.8.3"
   },
   "devDependencies": {
+    "babel-loader": "8.0.6",
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8"
   }
