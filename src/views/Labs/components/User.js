@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { create } from '../../../services/user';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../../../store/ducks/alert';
 import { Creators as LoadingActions } from '../../../store/ducks/loading';
 
@@ -32,7 +32,7 @@ const UserDialog = ({ open, toggle, loading, setAdm }) => {
     role: 'ADMIN',
     assigned: false,
   });
-
+  const { data: currentUser } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const closeForm = () => {
@@ -63,7 +63,7 @@ const UserDialog = ({ open, toggle, loading, setAdm }) => {
 
     try {
       dispatch(LoadingActions.setLoading(true));
-      const result = await create(model);
+      const result = await create(model, currentUser);
       setAdm(result.id);
       dispatch(AlertActions.success('Usuário cadastrado com sucesso!'));
       dispatch(LoadingActions.setLoading(false));

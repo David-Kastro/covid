@@ -30,8 +30,7 @@ function UsersList(props) {
     <>
       <Button 
         className="btn-fill mb-3"
-        color="primary" 
-        disabled={role === 'ADMIN' && !assigned}
+        color="primary"
         onClick={() => create()}
       >
         <div className="button-content">
@@ -64,11 +63,15 @@ function UsersList(props) {
                           <td>{item.name}{' '}{item.last_name}</td>
                           <td>{item.email}</td>
                           <td><Badge color={rolesColors[item.role]} style={{fontSize: 14}}>{item.role}</Badge></td>
-                          <td>{item.assigned ? (
-                            <Badge color="success" style={{fontSize: 14}}>Sim</Badge>
+                          {item.role === 'MEDICO' ? (
+                            <td>---</td>
                           ) : (
-                            <Badge color="light" style={{fontSize: 14}}>Não</Badge>
-                          )}</td>
+                            <td>{item.assigned ? (
+                              <Badge color="success" style={{fontSize: 14}}>Sim</Badge>
+                            ) : (
+                              <Badge color="light" style={{fontSize: 14}}>Não</Badge>
+                            )}</td>
+                          )}
                           <td>
                             <IconButton
                               id="user-edit"

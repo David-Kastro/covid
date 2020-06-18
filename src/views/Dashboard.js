@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
+import { Redirect } from "react-router-dom";
 import { getExamsGraph, getProfitGraph, getClientsGraph } from '../services/dashboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../store/ducks/alert';
@@ -36,7 +37,7 @@ function Dashboard() {
   const [dataChart3, setDataChart3] = useState(null);
   const [dataChart4, setDataChart4] = useState(null);
 
-  const { data } = useSelector(state => state.auth);
+  const { data, role } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const loadData = useCallback(async () => {
@@ -58,6 +59,10 @@ function Dashboard() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  if( role === 'MEDICO' ){
+    return <Redirect from="/" to="/admin/exames" />
+  }
 
   return (
     <>

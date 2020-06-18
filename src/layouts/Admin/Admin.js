@@ -76,7 +76,7 @@ class Admin extends React.Component {
       return adminRoutes;
     }
 
-    if( role === 'MEDIC' ) {
+    if( role === 'MEDICO' ) {
       return medicRoutes;
     }
 

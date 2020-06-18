@@ -17,7 +17,7 @@
 */
 import Dashboard from "views/Dashboard.js";
 import Icons from "views/Icons.js";
-import Notifications from "views/Notifications.js";
+import Exams from "views/Exams";
 // import UserProfile from "views/UserProfile.js";
 import Users from "views/Users";
 import Labs from "views/Labs";
@@ -44,7 +44,7 @@ export const routes = [
     name: "Exames",
     rtlName: "إخطارات",
     icon: "tim-icons icon-sound-wave",
-    component: Notifications,
+    component: Exams,
     layout: "/admin"
   },
   {
@@ -71,7 +71,7 @@ export const adminRoutes = [
     name: "Exames",
     rtlName: "إخطارات",
     icon: "tim-icons icon-sound-wave",
-    component: Notifications,
+    component: Exams,
     layout: "/admin"
   },
   {
@@ -86,19 +86,11 @@ export const adminRoutes = [
 
 export const medicRoutes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    rtlName: "لوحة القيادة",
-    icon: "tim-icons icon-chart-pie-36",
-    component: Dashboard,
-    layout: "/admin"
-  },
-  {
     path: "/exames",
     name: "Seus Exames",
     rtlName: "إخطارات",
     icon: "tim-icons icon-sound-wave",
-    component: Notifications,
+    component: Exams,
     layout: "/admin"
   },
 ];

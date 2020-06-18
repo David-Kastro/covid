@@ -1,4 +1,5 @@
 import firebase from './firebase';
+import mainLabs from '../config/mainLabs';
 
 const db = firebase.firestore();
 
@@ -7,6 +8,7 @@ export async function create(data, user) {
   if (!result.empty) {
     throw Error('Já existe um usuário cadastrado com esse email!');
   }
+  console.log(user)
   const userData = {
     ...data,
     assignedTo: user.assignedTo || null,
@@ -39,7 +41,18 @@ export async function list(user) {
 
   } else {
     if(!user.assigned) {
-      return [];
+      const result = await db
+        .collection('users')
+        .where('role', 'in', ['ADMIN', 'MEDICO'])
+        .where('assignedTo', '==', null)
+        .get()
+        .then(querySnapshot => {
+          let data = [];
+          querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
+          return data;
+        });
+
+      return result.filter(u => u.id !== user.id);
     }
     const result = await db
       .collection('users')
@@ -109,4 +122,34 @@ export async function assignUser(id, assign = true, lab = null) {
       assigned: assign,
       assignedTo: assign ? lab : null
     }, {merge: true});
+}
+
+export async function getMedics(user, labId) {
+  if (mainLabs.includes(labId)) {
+    const result = await db
+      .collection('users')
+      .where('role', '==', 'MEDICO')
+      .where('assignedTo', '==', null)
+      .get()
+      .then(querySnapshot => {
+        let data = [];
+        querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
+        return data;
+      });
+
+    return result;
+  }
+
+  const result = await db
+    .collection('users')
+    .where('role', '==', 'MEDICO')
+    .where('assignedTo', '==', labId)
+    .get()
+    .then(querySnapshot => {
+      let data = [];
+      querySnapshot.forEach(doc => {data = [...data, {id: doc.id, ...doc.data()}]});
+      return data;
+    });
+
+  return result.filter(u => u.id !== user.id);
 }

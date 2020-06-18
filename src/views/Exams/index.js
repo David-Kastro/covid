@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import classNames from "classnames";
 import { useDispatch, useSelector } from 'react-redux';
-import { Creators as AlertActions } from '../store/ducks/alert';
-import { getExams } from '../services/exam';
-import { enStatus, enStatusColor } from '../helpers/enums';
+import { Creators as AlertActions } from '../../store/ducks/alert';
+import { Creators as LoadingActions } from '../../store/ducks/loading';
+import { getExams, assignExam } from '../../services/exam';
+import { enStatus, enStatusColor } from '../../helpers/enums';
 import { formatDate } from 'helpers/date';
 
 // reactstrap components
@@ -21,15 +22,19 @@ import {
   UncontrolledTooltip
 } from "reactstrap";
 
+import Medics from './components/Medics';
+
 const examFilterOptions = {
   'COLETA': 'Exames de Coleta',
   'CONSULTA': 'Exames de Consulta',
   'TODOS': 'Todos os Exames'
 }
 
-function Notifications() {
+function Exams() {
   const [ examFilter, setExamFilter ] = useState('TODOS');
   const [ exams, setExams ] = useState(null);
+  const [ showMedicsDialog, setShowMedicsDialog ] = useState(false);
+  const [ selectedExam, setSelectedExam ] = useState(null);
   const { role, data } = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
@@ -49,6 +54,30 @@ function Notifications() {
       dispatch(AlertActions.error('Erro ao buscar dados de Exames'));
     }
   }, [dispatch, data]);
+
+  const assignExamToMedic = async medic => {
+    try {
+      dispatch(LoadingActions.setLoading(true));
+      await assignExam(selectedExam, medic);
+      closeMedicsDialog();
+    } catch(err) {
+      dispatch(AlertActions.error('Não foi possível atribuir o Exame'));
+    }
+  }
+
+  const openMedicsDialog = exam => {
+    setSelectedExam(exam);
+    setShowMedicsDialog(true);
+  };
+
+  const closeMedicsDialog = () => {
+    setShowMedicsDialog(false);
+    setSelectedExam(null);
+  };
+
+  const getSelectedExamLabId = exam => {
+    return exams.filter(ex => ex.id === exam)[0].lab_id;
+  };
  
   useEffect(() => {
     loadData();
@@ -174,11 +203,16 @@ function Notifications() {
                           <td>
                             <div id={'button_' + item.id}>
                               <Button
-                                color="primary"
+                                color={item.assigned ? 'secondary' : 'primary'}
                                 disabled={item.status !== 'booked' || !item.booked_at}
-                                onClick={() => {}}
+                                onClick={() => openMedicsDialog(item.id)}
+                                style={{width: 180}}
                               >
-                                <span style={{color: '#fff', fontSize:10, padding: 0}}>{role === 'MEDICO' ? 'Pegar exame' : 'Atribuir a um médico'}</span>
+                                {role === 'MEDICO' ? (
+                                  <span style={{color: '#fff', fontSize:10, padding: 0}}>Pegar exame</span>
+                                ) : (
+                                  <span style={{color: '#fff', fontSize:10, padding: 0}}>{item.assigned ? 'Mudar médico' : 'Atribuir a um médico'}</span>
+                                )}
                               </Button>
                             </div>
                             <UncontrolledTooltip
@@ -203,8 +237,11 @@ function Notifications() {
           </Card>
         </Col>
       </Row>
+      {selectedExam && (
+        <Medics open={showMedicsDialog} toggle={closeMedicsDialog} onSubmit={assignExamToMedic} lab={getSelectedExamLabId(selectedExam)} />
+      )}
     </div>
   );
 }
 
-export default Notifications;
+export default Exams;
