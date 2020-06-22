@@ -23,9 +23,10 @@ import {
 
 const requiredFields = [
   'name',
+  'email',
+  'phone',
   'cnpj',
   'zip_code',
-  'street_number',
   'neighborhood',
   'city',
   'federal_unit',
@@ -46,6 +47,7 @@ function LabsForm(props) {
   const [model, setModel] = useState({
     name: '',
     email: '',
+    phone: '',
     cnpj: '',
     zip_code: '', //Cep
     additional_info: '',
@@ -116,10 +118,12 @@ function LabsForm(props) {
         setCepLoading(false);
         return;
       }
+      const resultZipCode = result.cep.match(/\d/g);
+      const resultStreet = result.logradouro.match(/\d/g);
       setModel({
         ...model,
-        zip_code: Number(result.cep.match(/\d/g).join('')),
-        street_number: Number(result.logradouro.match(/\d/g).join('')),
+        zip_code: resultZipCode ? Number(resultZipCode.join('')) : '',
+        street_number: resultStreet ? Number(resultStreet.join('')) : '',
         neighborhood: result.bairro,
         city: result.localidade,
         federal_unit: result.uf,
@@ -197,6 +201,18 @@ function LabsForm(props) {
                 <Row>
                   <Col className="pr-md-1" md="6">
                     <FormGroup>
+                      <label>Telefone*</label>
+                      <Input
+                        onChange={event => handleForm('phone', event.target.value)}
+                        value={model.phone}
+                        placeholder="Telefone"
+                        type="text"
+                        disabled={loading}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col className="pl-md-1" md="6">
+                    <FormGroup>
                       <label>CNPJ*</label>
                       <Input
                         onChange={event => handleForm('cnpj', event.target.value)}
@@ -207,7 +223,9 @@ function LabsForm(props) {
                       />
                     </FormGroup>
                   </Col>
-                  <Col className="pl-md-1" md="6">
+                </Row>
+                <Row>
+                  <Col md="6">
                     <FormGroup>
                       <label>CEP*</label>
                       <Row style={{alignItems: 'center'}}>

@@ -8,7 +8,6 @@ export async function create(data, user) {
   if (!result.empty) {
     throw Error('Já existe um usuário cadastrado com esse email!');
   }
-  console.log(user)
   const userData = {
     ...data,
     assignedTo: user.assignedTo || null,

@@ -25,7 +25,7 @@ const rolesColors = {
 
 function UsersList(props) {
   const { create, edit, items } = props;
-  const { role, assigned } = useSelector(state => state.auth);
+  const { role } = useSelector(state => state.auth);
   return (
     <>
       <Button 
@@ -53,6 +53,7 @@ function UsersList(props) {
                       <th>E-mail</th>
                       <th>Perfil</th>
                       <th>Atribuído</th>
+                      <th>Laboratório</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
@@ -72,6 +73,7 @@ function UsersList(props) {
                               <Badge color="light" style={{fontSize: 14}}>Não</Badge>
                             )}</td>
                           )}
+                          <td>{item.labName ? item.labName : ''}</td>
                           <td>
                             <IconButton
                               id="user-edit"

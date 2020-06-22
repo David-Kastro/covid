@@ -36,12 +36,12 @@ export async function getExamsGraph(user) {
   if(!exams.length) {
     return { 
       labels,
-      data1: [ 0, 0, 0, 0, 0],
-      data2: [ 0, 0, 0, 0, 0],
-      data3: [ 0, 0, 0, 0, 0],
+      data1: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      data2: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      data3: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       dataFinished: {
         labels: getMonthsFromCurrent(),
-        data: [ 0, 0, 0, 0, 0],
+        data: [0, 0, 0, 0, 0],
         total: 0
       }
     }

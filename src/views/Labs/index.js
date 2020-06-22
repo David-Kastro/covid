@@ -4,10 +4,13 @@ import {
   create as createLabs,
   save as saveLabs
 } from '../../services/lab';
+import { getByLab } from '../../services/exam';
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as LabActions } from '../../store/ducks/lab';
 import { Creators as AlertActions } from '../../store/ducks/alert';
 import { Creators as LoadingActions } from '../../store/ducks/loading';
+import { enStatus, enStatusColor } from 'helpers/enums';
+import { formatDate } from 'helpers/date';
 
 import LabsForm from './components/Form';
 import LabsList from './components/List';
@@ -16,11 +19,16 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  Table,
+  Badge
 } from 'reactstrap';
+import Spinner from 'react-spinner-material';
 
 function Labs() {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [history, setHistory] = useState(null);
   const [item, setItem] = useState(null);
 
   const labs = useSelector(state => state.lab);
@@ -44,7 +52,7 @@ function Labs() {
 
   useEffect(() => {
     loadData(); 
-   }, [loadData]);
+  }, [loadData]);
 
   const openForm = item => {
     setItem(item);
@@ -56,8 +64,22 @@ function Labs() {
     setShowForm(false);
   }
 
-  const openHistory = () => {
-    setShowHistory(true);
+  const openHistory = async labId => {
+    try {
+      setShowHistory(true);
+      setLoadingHistory(true);
+      const result = await getByLab(labId, 'finished');
+      setHistory(result);
+      setLoadingHistory(false);
+    } catch (err) {
+      dispatch(AlertActions.error('Não foi possível carregar o histórico desse laboratório'));
+      setLoadingHistory(false);
+    }
+  }
+
+  const closeHistory = () => {
+    setShowHistory(false);
+    setHistory(null)
   }
 
   const handleSubmit = async (model) => {
@@ -100,14 +122,53 @@ function Labs() {
           )
         }
       </div>
-      <Modal style={{maxWidth: 800}} isOpen={showHistory} toggle={() => setShowHistory(false)}>
-        <ModalHeader toggle={() => setShowHistory(false)} />
-        <span style={{fontSize: 24, color: 'white', paddingLeft: 20}}>Histórico de exames</span>
-        <ModalBody>
-          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
-            Nenhum item encontrado
-          </div>
-        </ModalBody>
+      <Modal style={{maxWidth: 800}} isOpen={showHistory} toggle={() => closeHistory()}>
+        <ModalHeader toggle={() => closeHistory()} />
+        <span style={{fontSize: 24, color: 'white', paddingLeft: 20}}>Histórico de exames finalizados</span>
+        {loadingHistory ? (
+          <ModalBody style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection:'column'}}>
+            <Spinner radius={48} color="#e14eca" stroke={3} visible={true} />
+          </ModalBody>
+        ) : (
+          <ModalBody>
+            {history && history.length ? (
+              <Table className="tablesorter" responsive>
+                <thead className="text-primary">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Atribuído</th>
+                    <th>Agendado para</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    history.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.type}</td>
+                        <td>
+                          <Badge style={{fontSize: 14, backgroundColor: enStatusColor[item.status]}}>
+                            {item.status === 'approved' && !item.booked_at ? 'Aguardando Agendamento' : enStatus[item.status]}
+                          </Badge>
+                        </td>
+                        <td>{item.assigned ? (
+                          <Badge color="success" style={{fontSize: 14}}>Sim</Badge>
+                        ) : (
+                          <Badge color="light" style={{fontSize: 14}}>Não</Badge>
+                        )}</td>
+                        <td>{item.booked_at ? formatDate(item.booked_at.seconds) : '---'}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </Table>
+            ) : (
+              <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'white'}}>
+                Nenhum item encontrado
+              </div>
+            )}
+          </ModalBody>
+        )}
       </Modal>
     </>
   );
