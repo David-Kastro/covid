@@ -1,4 +1,5 @@
 import firebase from './firebase';
+import mainLabs from '../config/mainLabs';
 
 const db = firebase.database();
 
@@ -43,7 +44,8 @@ export async function getNotifications(userData, action) {
 
   if(!userData.assignedTo) {
     const userRef = db.ref(`notifications/users/${userData.id}`);
-    const labRef = db.ref(`notifications/main`);
+    const lab1Ref = db.ref(`notifications/labs/${mainLabs[0]}`);
+    const lab2Ref = db.ref(`notifications/labs/${mainLabs[1]}`);
     userRef
       .on('value', function(snapshot) {
         if(!snapshot) {
@@ -58,7 +60,21 @@ export async function getNotifications(userData, action) {
         action(data);
       });
 
-    labRef
+    lab1Ref
+      .on('value', function(snapshot) {
+        if(!snapshot) {
+          action([])
+          return;
+        }
+        let data = [];
+        snapshot.forEach(doc => {
+          const path = doc.ref.path.pieces_.join('/');
+          data = [...data, {id: doc.key, path, ...doc.val()}]
+        });
+        action(data, true);
+      });
+
+      lab2Ref
       .on('value', function(snapshot) {
         if(!snapshot) {
           action([])
