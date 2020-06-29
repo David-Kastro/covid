@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import classNames from "classnames";
 import { useDispatch, useSelector } from 'react-redux';
 import { Creators as AlertActions } from '../store/ducks/alert';
+import { Creators as NotificationsActions } from '../store/ducks/notifications';
 import { getExams } from '../services/exam';
 import { removeNotification } from '../services/notification';
 import { enStatus, enStatusColor, enNotifications } from '../helpers/enums';
@@ -53,6 +54,7 @@ function Notifications() {
     try {
       toggle()
       setLoadingRemove(true);
+      dispatch(NotificationsActions.clearNotifications());
       await removeNotification(path);
       setLoadingRemove(false);
     } catch (err) {
