@@ -40,13 +40,14 @@ export async function getNotifications(userData, action) {
         });
         action(data);
       });
+    return 
   }
 
   if(!userData.assignedTo) {
     const userRef = db.ref(`notifications/users/${userData.id}`);
     const lab1Ref = db.ref(`notifications/labs/${mainLabs[0]}`);
     const lab2Ref = db.ref(`notifications/labs/${mainLabs[1]}`);
-    userRef
+    await userRef
       .on('value', function(snapshot) {
         if(!snapshot) {
           action([])
@@ -60,7 +61,7 @@ export async function getNotifications(userData, action) {
         action(data);
       });
 
-    lab1Ref
+    await lab1Ref
       .on('value', function(snapshot) {
         if(!snapshot) {
           action([])
@@ -74,7 +75,7 @@ export async function getNotifications(userData, action) {
         action(data, true);
       });
 
-      lab2Ref
+      await lab2Ref
       .on('value', function(snapshot) {
         if(!snapshot) {
           action([])
@@ -87,6 +88,7 @@ export async function getNotifications(userData, action) {
         });
         action(data, true);
       });
+    return;
   }
 
   const userRef = db.ref(`notifications/users/${userData.id}`);
