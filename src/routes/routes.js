@@ -16,11 +16,12 @@
 
 */
 import Dashboard from "views/Dashboard.js";
-import Icons from "views/Icons.js";
+// import Icons from "views/Icons.js";
 import Exams from "views/Exams";
 // import UserProfile from "views/UserProfile.js";
 import Users from "views/Users";
 import Labs from "views/Labs";
+import Notifications from "views/Notifications";
 
 export const routes = [
   {
@@ -29,6 +30,14 @@ export const routes = [
     rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-pie-36",
     component: Dashboard,
+    layout: "/admin"
+  },
+  {
+    path: "/notifications",
+    name: "Notificações",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-bell-55",
+    component: Notifications,
     layout: "/admin"
   },
   {
@@ -67,6 +76,14 @@ export const adminRoutes = [
     layout: "/admin"
   },
   {
+    path: "/notifications",
+    name: "Notificações",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-bell-55",
+    component: Notifications,
+    layout: "/admin"
+  },
+  {
     path: "/exames",
     name: "Exames",
     rtlName: "إخطارات",
@@ -85,6 +102,14 @@ export const adminRoutes = [
 ];
 
 export const medicRoutes = [
+  {
+    path: "/notifications",
+    name: "Notificações",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-bell-55",
+    component: Notifications,
+    layout: "/admin"
+  },
   {
     path: "/exames",
     name: "Seus Exames",

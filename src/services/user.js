@@ -1,5 +1,6 @@
 import firebase from './firebase';
 import mainLabs from '../config/mainLabs';
+import { newNotification } from '../services/notification';
 
 const db = firebase.firestore();
 
@@ -114,13 +115,17 @@ export async function assignUser(id, assign = true, lab = null) {
   if (!result.exists) {
     return;
   }
-  return await db
+  const userAssigned = await db
     .collection('users')
     .doc(id)
     .set({
       assigned: assign,
       assignedTo: assign ? lab : null
     }, {merge: true});
+  
+  await newNotification(`notifications/users/${id}/`, 'ADM_ASSIGNED', 'dashboard');
+
+  return userAssigned;
 }
 
 export async function getMedics(user, labId) {

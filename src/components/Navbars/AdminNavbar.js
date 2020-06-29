@@ -1,7 +1,8 @@
 import React from "react";
 import classNames from "classnames";
 import firebase from '../../services/firebase';
-
+import { enNotifications } from '../../helpers/enums';
+import { Link } from 'react-router-dom';
 // reactstrap components
 import {
   Button,
@@ -39,6 +40,7 @@ class AdminNavbar extends React.Component {
     window.removeEventListener("resize", this.updateColor);
   }
   logOut() {
+    localStorage.setItem('CovidappReloadWindow', true)
     firebase.auth().signOut();
   }
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
@@ -118,18 +120,6 @@ class AdminNavbar extends React.Component {
             </button>
             <Collapse navbar isOpen={this.state.collapseOpen}>
               <Nav className="ml-auto" navbar style={{display: 'flex', alignItems: 'center', color: 'white'}}>
-                {/* <InputGroup className="search-bar">
-                  <Button
-                    color="link"
-                    data-target="#searchModal"
-                    data-toggle="modal"
-                    id="search-button"
-                    onClick={this.toggleModalSearch}
-                  >
-                    <i className="tim-icons icon-zoom-split" />
-                    <span className="d-lg-none d-md-block">Search</span>
-                  </Button>
-                </InputGroup>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
@@ -137,39 +127,44 @@ class AdminNavbar extends React.Component {
                     data-toggle="dropdown"
                     nav
                   >
-                    <div className="notification d-none d-lg-block d-xl-block" />
-                    <i className="tim-icons icon-sound-wave" />
+                    {!!this.props.notifications.length && (
+                      <div className="notification d-none d-lg-block d-xl-block" />
+                    )}
+                    <i className="tim-icons icon-bell-55" />
                     <p className="d-lg-none">Notifications</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Mike John responded to your email
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        You have 5 more tasks
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Your friend Michael is in town
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another notification
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another one
-                      </DropdownItem>
-                    </NavLink>
+                    {this.props.notifications.length ? (
+                      this.props.notifications.map((item, index) => (
+                        <NavLink key={'dropdown_notification_' + index} tag="li">
+                          <Link to={item.link}>
+                            <DropdownItem className="nav-item">
+                              {enNotifications[item.notificationCode]}
+                            </DropdownItem>
+                          </Link>
+                        </NavLink>
+                      ))
+                    ) : (
+                      <NavLink tag="li">
+                        <Link to="notifications">
+                          <DropdownItem className="nav-item">
+                            Nenhuma notificação nova
+                          </DropdownItem>
+                        </Link>
+                      </NavLink>
+                    )}
                   </DropdownMenu>
-                </UncontrolledDropdown> */}
-                <div>{this.props.auth.data.email} | {this.props.auth.role}</div>
+                </UncontrolledDropdown>
+                <div 
+                  style={{
+                    backgroundColor: '#27293d',
+                    padding: 5,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    borderRadius: 100
+                  }}>
+                    {this.props.auth.data.email} | {this.props.auth.role}
+                  </div>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
@@ -219,7 +214,8 @@ class AdminNavbar extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  notifications: state.notifications
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(AuthActions, dispatch);

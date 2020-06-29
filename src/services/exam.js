@@ -1,5 +1,6 @@
 import firebase from './firebase';
 import mainLabs from '../config/mainLabs';
+import { newNotification } from '../services/notification';
 
 const db = firebase.firestore();
 
@@ -70,13 +71,17 @@ export async function assignExam(id, medic, assign = true ) {
   if (!result.exists) {
     return;
   }
-  return await db
+  const examAssingn = await db
     .collection('exams')
     .doc(id)
     .set({
       assigned: assign,
       assignedTo: assign ? medic : null
     }, {merge: true});
+
+  await newNotification(`notifications/users/${medic}/`, 'EXAM_ASSIGNED', 'exames');
+
+  return examAssingn;
 }
 
 export async function finishExam(id, filePath) {
@@ -88,13 +93,17 @@ export async function finishExam(id, filePath) {
   if (!result.exists) {
     throw Error('Exame não encontrado!');
   }
-  return await db
+  const finishedExam = await db
     .collection('exams')
     .doc(id)
     .set({
       status: 'finished',
       result: filePath
     }, {merge: true});
+
+  await newNotification(`notifications/labs/${result.data().lab_id}/`, 'EXAM_FINISHED', 'exames');
+
+  return finishedExam;
 }
 
 export async function getByStatus(user, status) {

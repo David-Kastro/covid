@@ -49,3 +49,10 @@ export const enStatusColor = {
   'finished': '#6200EA',
   'cancelled': '#DD2C00',
 }
+
+export const enNotifications = {
+  EXAM_ASSIGNED: 'Um exame foi atribuído a você!',
+  EXAM_BOOKED: 'Um novo exame foi agendado.',
+  EXAM_FINISHED: 'Mais um exame concluído',
+  ADM_ASSIGNED: 'Você foi designado a um laboratório!',
+}

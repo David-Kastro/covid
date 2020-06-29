@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useDispatch } from 'react-redux';
 import { Creators as AlertActions } from '../../store/ducks/alert';
 import { Link } from 'react-router-dom';
@@ -48,6 +48,14 @@ function Login() {
       dispatch(AlertActions.error(err.message));
     }
   };
+
+  useEffect(() => {
+    const reloadCookie = localStorage.getItem('CovidappReloadWindow');
+    if(reloadCookie) {
+      localStorage.removeItem('CovidappReloadWindow');
+      window.location.reload();
+    }
+  }, [])
 
   return (
     <div className="login-screen">

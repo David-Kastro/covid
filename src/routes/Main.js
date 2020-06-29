@@ -3,7 +3,9 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { Creators as AuthActions } from '../store/ducks/auth';
 import { Creators as AlertActions } from '../store/ducks/alert';
+import { Creators as NotificationsActions } from '../store/ducks/notifications';
 import { listByEmail } from '../services/user';
+import { getNotifications } from '../services/notification';
 import firebase from '../services/firebase';
 
 import AdminLayout from "layouts/Admin/Admin.js";
@@ -29,6 +31,15 @@ export default function Main() {
           role: userData.role,
           data: userData,
         }));
+        await getNotifications(
+          userData,
+          (notifications, merge = false) => {
+            const allNotifications = notifications || [];
+            merge 
+              ? dispatch(NotificationsActions.addNotifications(allNotifications))
+              : dispatch(NotificationsActions.setNotifications(allNotifications))
+          }
+        );
         setAuthenticated(true);
         setLoading(false)
       } else {
